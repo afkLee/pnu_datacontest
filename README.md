@@ -27,8 +27,7 @@
 | 역할       | 기술                        |
 |------------|-----------------------------|
 | 프론트엔드 | [![Nuxt.js](https://img.shields.io/badge/Nuxt.js-00DC82?style=for-the-badge&logo=nuxt.js&logoColor=white)](https://nuxt.com)                     |
-| 백엔드     | [![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com) [![REST API](https://img.shields.io/badge/REST%20API-blue?style=for-the-badge)](https://restfulapi.net/)
-            |
+| 백엔드     | [![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com) |
 | 데이터베이스 | [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org)                  |
 | 배포       | [![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://aws.amazon.com)                       |
 
