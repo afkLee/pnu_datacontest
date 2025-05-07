@@ -43,8 +43,7 @@
 | DELETE | `/api/v1/favorites` | 즐겨찾기 삭제         |
 
 [![Open in Swagger Editor](https://img.shields.io/badge/Swagger%20Editor-Open-blue?logo=swagger)](https://editor.swagger.io/?url=https://raw.githubusercontent.com/afkLee/pnu_datacontest/main/swagger.yaml)
-# Import URL
-https://raw.githubusercontent.com/afkLee/pnu_datacontest/main/swagger.yaml
+ **Import URL**: https://raw.githubusercontent.com/afkLee/pnu_datacontest/main/swagger.yaml
 
 ---
 
