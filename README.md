@@ -42,6 +42,8 @@
 | GET    | `/api/v1/favorites` | 즐겨찾기 목록 조회     |
 | DELETE | `/api/v1/favorites` | 즐겨찾기 삭제         |
 
+[![Open in Swagger Editor](https://img.shields.io/badge/Swagger%20Editor-Open-blue?logo=swagger)](https://editor.swagger.io/?url=https://raw.githubusercontent.com/afkLee/pnu_datacontest/main/swagger.yaml)
+https://raw.githubusercontent.com/afkLee/pnu_datacontest/main/swagger.yaml
 
 ---
 
