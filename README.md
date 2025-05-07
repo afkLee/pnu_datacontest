@@ -27,7 +27,7 @@
 | 역할       | 기술                        |
 |------------|-----------------------------|
 | 프론트엔드 | Nuxt.js                     |
-| 백엔드     | NestJS, REST API, JWT 인증 |
+| 백엔드     | NestJS, REST API             |
 | 데이터베이스 | PostgreSQL                  |
 | 배포       | AWS                         |
 
