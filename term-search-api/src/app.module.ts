@@ -4,6 +4,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
+import { TermsModule } from './terms/terms.module';
 
 @Module({
   imports: [
@@ -17,7 +18,7 @@ import { AppService } from './app.service';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true, // 개발 시에만 true
-    }),
+    }), TermsModule,
   ],
   controllers: [AppController],
   providers: [AppService],
