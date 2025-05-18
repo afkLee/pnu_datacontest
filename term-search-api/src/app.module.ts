@@ -5,6 +5,9 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TermsModule } from './terms/terms.module';
+import { FavoritesService } from './favorites/favorites.service';
+import { FavoritesController } from './favorites/favorites.controller';
+import { FavoritesModule } from './favorites/favorites.module';
 
 @Module({
   imports: [
@@ -18,7 +21,7 @@ import { TermsModule } from './terms/terms.module';
       database: process.env.DB_NAME,
       autoLoadEntities: true,
       synchronize: true, // 개발 시에만 true
-    }), TermsModule,
+    }), TermsModule, FavoritesModule,
   ],
   controllers: [AppController],
   providers: [AppService],

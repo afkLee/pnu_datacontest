@@ -1,0 +1,23 @@
+// src/favorites/favorites.controller.ts
+import { Controller, Post, Get, Delete, Body, Query } from '@nestjs/common';
+import { FavoritesService } from './favorites.service';
+
+@Controller('favorites')
+export class FavoritesController {
+  constructor(private readonly favoritesService: FavoritesService) {}
+
+  @Post()
+  async add(@Body() body: { userId: string; termId: number }) {
+    return this.favoritesService.addFavorite(body.userId, body.termId);
+  }
+
+  @Get()
+  async list(@Query('userId') userId: string) {
+    return this.favoritesService.getFavorites(userId);
+  }
+
+  @Delete()
+  async remove(@Query('userId') userId: string, @Query('termId') termId: number) {
+    return this.favoritesService.removeFavorite(userId, +termId);
+  }
+}
