@@ -1,17 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
+import { ElasticsearchModule } from '@nestjs/elasticsearch'; // ✅ 추가
 
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { TermsModule } from './terms/terms.module';
-import { FavoritesService } from './favorites/favorites.service';
-import { FavoritesController } from './favorites/favorites.controller';
-import { FavoritesModule } from './favorites/favorites.module';
+import { FavoritesModule } from './favorites/favorites.module'; // ✅ 중복된 service/controller 제거
 
 @Module({
   imports: [
-    ConfigModule.forRoot({ isGlobal: true }),  // .env 사용을 위한 설정
+    ConfigModule.forRoot({ isGlobal: true }),
     TypeOrmModule.forRoot({
       type: 'postgres',
       host: process.env.DB_HOST,
@@ -20,8 +19,13 @@ import { FavoritesModule } from './favorites/favorites.module';
       password: process.env.DB_PASSWORD,
       database: process.env.DB_NAME,
       autoLoadEntities: true,
-      synchronize: true, // 개발 시에만 true
-    }), TermsModule, FavoritesModule,
+      synchronize: true,
+    }),
+    ElasticsearchModule.register({
+      node: 'http://localhost:9200', // ✅ Elasticsearch 서버 주소
+    }),
+    TermsModule,
+    FavoritesModule,
   ],
   controllers: [AppController],
   providers: [AppService],
