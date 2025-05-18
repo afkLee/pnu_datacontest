@@ -1,7 +1,10 @@
 import axios from 'axios';
 
 export async function generateDefinition(term: string, termEn: string): Promise<string> {
-  const prompt = `${term} (${termEn})은(는) 무엇인가요? 금속 재료 분야에서 쉽게 설명해줘.`;
+  const prompt = `다음 금속 처리 용어에 대해 기술적으로 간결하게 정의해줘.
+용어: ${term}
+영문: ${termEn}
+조건: 비유나 잡설 없이, 2~3문장 이내의 정의 형식으로만 작성해줘.`;
 
   try {
     const res = await axios.post(
