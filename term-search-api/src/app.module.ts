@@ -22,7 +22,7 @@ import { FavoritesModule } from './favorites/favorites.module'; // ✅ 중복된
       synchronize: true,
     }),
     ElasticsearchModule.register({
-      node: 'http://localhost:9200', // ✅ Elasticsearch 서버 주소
+      node: process.env.ELASTICSEARCH_URL, // ✅ Elasticsearch 서버 주소
     }),
     TermsModule,
     FavoritesModule,

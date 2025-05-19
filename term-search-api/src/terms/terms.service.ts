@@ -78,16 +78,23 @@ export class TermsService {
   }
 
   //  Elasticsearch에 전체 데이터 동기화
-  async syncAllToElasticsearch(): Promise<string> {
-    const allTerms = await this.termRepository.find();
-    const body = allTerms.flatMap(term => [
-      { index: { _index: 'terms', _id: term.id } },
-      term,
-    ]);
+async syncAllToElasticsearch(): Promise<string> {
+  const allTerms = await this.termRepository.find();
 
-    await this.es.bulk({ refresh: true, body });
-    return `${allTerms.length} terms indexed in Elasticsearch.`;
+  if (allTerms.length === 0) {
+    console.log('❗ Elasticsearch 색인할 데이터가 없습니다.');
+    return '색인할 데이터 없음';
   }
+
+  const body = allTerms.flatMap(term => [
+    { index: { _index: 'terms', _id: term.id } },
+    term,
+  ]);
+
+  await this.es.bulk({ refresh: true, body });
+  return `${allTerms.length}건 색인 완료`;
+}
+
 
   //  AI 해설 반환
   async askWithAI(termInput: string): Promise<string> {

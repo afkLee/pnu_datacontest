@@ -1,15 +1,40 @@
-version: '3.8'
 
 services:
-  elasticsearch:
-    image: elasticsearch:7.17.0
-    container_name: es7
-    ports:
-      - "9200:9200"
+  postgres:
+    image: postgres:15
+    container_name: postgres
+    restart: always
     environment:
-      - discovery.type=single-node
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: terms
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
     networks:
       - backend
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  elasticsearch:
+    image: elasticsearch:7.17.0
+    container_name: elasticsearch
+    environment:
+      - discovery.type=single-node
+      - xpack.security.enabled=false
+    ports:
+      - "9200:9200"
+    networks:
+      - backend
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9200"]
+      interval: 10s
+      timeout: 5s
+      retries: 10
 
   api:
     build:
@@ -18,12 +43,23 @@ services:
     container_name: nest-api
     ports:
       - "3000:3000"
-    environment:
-      - ELASTICSEARCH_URL=http://elasticsearch:9200
     depends_on:
-      - elasticsearch
+      postgres:
+        condition: service_healthy
+      elasticsearch:
+        condition: service_healthy
+    environment:
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: terms
+      ELASTICSEARCH_URL: http://elasticsearch:9200
     networks:
       - backend
+
+volumes:
+  pgdata:
 
 networks:
   backend:
