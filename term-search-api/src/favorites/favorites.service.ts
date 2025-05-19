@@ -25,10 +25,16 @@ export class FavoritesService {
     return this.favoriteRepo.save(favorite);
   }
 
-  async getFavorites(userId: string): Promise<Term[]> {
-    const favorites = await this.favoriteRepo.find({ where: { userId } });
-    return favorites.map(f => f.term);
-  }
+ async getFavorites(userId: string, category?: string): Promise<Term[]> {
+  const favorites = await this.favoriteRepo.find({
+    where: { userId },
+    relations: ['term'],
+  });
+
+  return favorites
+    .map(f => f.term)
+    .filter(term => !category || term.category === category);
+}
 
   async removeFavorite(userId: string, termId: number): Promise<void> {
     await this.favoriteRepo.delete({ userId, term: { id: termId } });
