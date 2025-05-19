@@ -1,151 +1,219 @@
 openapi: 3.0.0
 info:
-  title: 산업용어 통합검색 API
+  title: 산업용어 API
   version: 1.0.0
-  description: 금속/통상/산업약어 분야의 용어 검색 및 즐겨찾기 기능 제공
+  description: 산업용어 검색 및 즐겨찾기 관리 API
 
 servers:
-  - url: /api/v1
+  - url: http://localhost:3000
 
 paths:
-  /search:
+  /terms/search:
     get:
-      summary: 산업용어 통합 검색
-      description: 엘라스틱서치를 이용한 통합 검색. 용어 해설, 출처, 분야 정보가 포함됩니다.
+      summary: 용어 검색
       parameters:
-        - in: query
-          name: keyword
-          schema:
-            type: string
+        - name: query
+          in: query
           required: true
-          description: 검색할 용어나 약어
-        - in: query
-          name: category
           schema:
             type: string
-            enum: [금속, 통상, 산업]
-          required: false
-          description: 분야 필터
-        - in: query
-          name: page
+        - name: category
+          in: query
           schema:
-            type: integer
-            default: 1
-        - in: query
-          name: size
+            type: string
+        - name: userId
+          in: query
           schema:
-            type: integer
-            default: 10
+            type: string
       responses:
         '200':
-          description: 검색 결과 반환
-          content:
-            application/json:
-              schema:
-                $ref: '#/components/schemas/SearchResults'
-
-  /favorites:
-    get:
-      summary: 즐겨찾기 목록 조회
-      security:
-        - bearerAuth: []
-      responses:
-        '200':
-          description: 즐겨찾기 리스트 반환
+          description: 검색된 용어 목록 (isFavorite 포함)
           content:
             application/json:
               schema:
                 type: array
                 items:
-                  $ref: '#/components/schemas/FavoriteItem'
+                  $ref: '#/components/schemas/TermWithFavorite'
 
+  /terms/ask:
     post:
-      summary: 즐겨찾기 추가
-      security:
-        - bearerAuth: []
+      summary: AI 해설 요청
       requestBody:
         required: true
         content:
           application/json:
             schema:
-              $ref: '#/components/schemas/FavoriteRequest'
+              type: object
+              properties:
+                question:
+                  type: string
+                  example: "1단질화란?"
       responses:
-        '201':
-          description: 즐겨찾기 추가 성공
+        '200':
+          description: AI가 생성한 해설
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    example: |
+                      1단질화은(는) single stage nitriding입니다.
 
-    delete:
-      summary: 즐겨찾기 제거
-      security:
-        - bearerAuth: []
+                      설명: 금속을 단일 단계로 질화 처리하는 공정입니다.
+
+  /terms/sync:
+    post:
+      summary: Elasticsearch 색인 동기화
+      responses:
+        '200':
+          description: 색인 완료 메시지
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "123 terms indexed in Elasticsearch."
+
+  /favorites:
+    get:
+      summary: 즐겨찾기 목록 조회
       parameters:
-        - in: query
-          name: termId
+        - name: userId
+          in: query
+          required: true
           schema:
             type: string
-          required: true
-          description: 즐겨찾기 삭제 대상 용어 ID
+        - name: category
+          in: query
+          schema:
+            type: string
       responses:
-        '204':
-          description: 즐겨찾기 삭제 성공
+        '200':
+          description: 즐겨찾기된 용어 목록 반환
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Term'
+
+    post:
+      summary: 즐겨찾기 등록
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteCreateInput'
+      responses:
+        '201':
+          description: 등록된 즐겨찾기 반환
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorite'
+
+    delete:
+      summary: 즐겨찾기 해제
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: termId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 삭제 완료
+
+  /favorites/check:
+    get:
+      summary: 즐겨찾기 여부 확인
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: termId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: isFavorite: true/false
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isFavorite:
+                    type: boolean
+                    example: true
 
 components:
-  securitySchemes:
-    bearerAuth:
-      type: http
-      scheme: bearer
-      bearerFormat: JWT
-
   schemas:
-    SearchResults:
-      type: object
-      properties:
-        total:
-          type: integer
-        results:
-          type: array
-          items:
-            $ref: '#/components/schemas/SearchItem'
-
-    SearchItem:
+    Term:
       type: object
       properties:
         id:
+          type: integer
+          example: 1
+        category:
           type: string
+          example: 금속
         term:
           type: string
-        explanation:
+          example: 1단질화
+        termEn:
           type: string
+          example: single stage nitriding
+        abbreviation:
+          type: string
+          example: SSN
+        definition:
+          type: string
+          example: 금속 표면을 단일 단계로 질화하는 공정입니다.
         source:
           type: string
-        category:
-          type: string
-          enum:
-            - 금속
-            - 통상
-            - 약어
+          example: 산업통상자원부
 
-    FavoriteItem:
+    TermWithFavorite:
+      allOf:
+        - $ref: '#/components/schemas/Term'
+        - type: object
+          properties:
+            isFavorite:
+              type: boolean
+              example: true
+
+    Favorite:
       type: object
       properties:
         id:
+          type: integer
+          example: 101
+        userId:
           type: string
+          example: test-user-uuid
         term:
-          type: string
-        category:
-          type: string
-          enum:
-            - 금속
-            - 통상
-            - 산업
-        addedAt:
+          $ref: '#/components/schemas/Term'
+        createdAt:
           type: string
           format: date-time
 
-    FavoriteRequest:
+    FavoriteCreateInput:
       type: object
       properties:
-        termId:
+        userId:
           type: string
-          description: 즐겨찾기 대상 용어 ID
-      required:
-        - termId
+          example: test-user-uuid
+        termId:
+          type: integer
+          example: 1
