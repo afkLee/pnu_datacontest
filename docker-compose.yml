@@ -13,7 +13,7 @@ services:
 
   api:
     build:
-      context: .
+      context: ./term-search-api
       dockerfile: Dockerfile
     container_name: nest-api
     ports:
