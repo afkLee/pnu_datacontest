@@ -1,7 +1,9 @@
 import { Injectable } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
-import { Repository } from 'typeorm';
+import { Repository, ILike } from 'typeorm';
+import { ElasticsearchService } from '@nestjs/elasticsearch';
 import { Term } from './entities/term.entity';
+import { Favorite } from '../favorites/entities/favorite.entity';
 import { generateDefinition } from '../utils/generateDefinition';
 
 @Injectable()
@@ -9,44 +11,87 @@ export class TermsService {
   constructor(
     @InjectRepository(Term)
     private readonly termRepository: Repository<Term>,
+    @InjectRepository(Favorite)
+    private readonly favoriteRepo: Repository<Favorite>,
+    private readonly es: ElasticsearchService,
   ) {}
 
-  // ✅ 검색 API - definition이 없으면 생성하여 DB에 저장
-  async search(query: string, category?: string): Promise<Term[]> {
-    const qb = this.termRepository.createQueryBuilder('term');
-
-    qb.where(
-      'term.term ILIKE :query OR term.termEn ILIKE :query OR term.abbreviation ILIKE :query',
-      { query: `%${query}%` },
-    );
+  //  검색 (isFavorite 포함)
+  async search(query: string, category?: string, userId?: string): Promise<(Term & { isFavorite: boolean })[]> {
+    const esQuery: any = {
+      query: {
+        bool: {
+          must: [
+            {
+              multi_match: {
+                query,
+                fields: ['term^3', 'termEn^2', 'abbreviation', 'definition'],
+                fuzziness: 'AUTO',
+              },
+            },
+          ],
+        },
+      },
+    };
 
     if (category) {
-      qb.andWhere('term.category = :category', { category });
+      esQuery.query.bool.filter = {
+        term: { category },
+      };
     }
 
-    const results = await qb.getMany();
+    const result = await this.es.search({
+      index: 'terms',
+      body: esQuery,
+    });
+
+    const hits = result.hits.hits.map((hit: any) => hit._source as Term);
+
+    // 즐겨찾기 ID 세트 준비
+    let favoriteTermIds = new Set<number>();
+    if (userId) {
+      const favorites = await this.favoriteRepo.find({
+        where: { userId },
+        relations: ['term'],
+      });
+      favoriteTermIds = new Set(favorites.map(f => f.term.id));
+    }
 
     const enrichedResults = await Promise.all(
-      results.map(async (term) => {
+      hits.map(async (term) => {
         if (!term.definition) {
           const generated = await generateDefinition(term.term, term.termEn);
-
           if (generated?.trim()) {
             term.definition = generated;
-            await this.termRepository.save(term); // ✅ DB에 저장
+            await this.termRepository.save(term);
           }
         }
-        return term;
-      })
+
+        return {
+          ...term,
+          isFavorite: favoriteTermIds.has(term.id),
+        };
+      }),
     );
 
     return enrichedResults;
   }
 
-  // ✅ 질문 응답 API - definition이 없으면 생성 (저장 X)
+  //  Elasticsearch에 전체 데이터 동기화
+  async syncAllToElasticsearch(): Promise<string> {
+    const allTerms = await this.termRepository.find();
+    const body = allTerms.flatMap(term => [
+      { index: { _index: 'terms', _id: term.id } },
+      term,
+    ]);
+
+    await this.es.bulk({ refresh: true, body });
+    return `${allTerms.length} terms indexed in Elasticsearch.`;
+  }
+
+  //  AI 해설 반환
   async askWithAI(termInput: string): Promise<string> {
     const keyword = termInput.trim();
-
     console.log('입력 용어:', keyword);
 
     const results = await this.termRepository

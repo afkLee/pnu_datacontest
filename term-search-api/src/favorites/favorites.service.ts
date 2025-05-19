@@ -33,4 +33,14 @@ export class FavoritesService {
   async removeFavorite(userId: string, termId: number): Promise<void> {
     await this.favoriteRepo.delete({ userId, term: { id: termId } });
   }
+
+  async isFavorite(userId: string, termId: number): Promise<boolean> {
+  const favorite = await this.favoriteRepo.findOne({
+    where: {
+      userId,
+      term: { id: termId },
+    },
+  });
+  return !!favorite;
+}
 }

@@ -20,4 +20,11 @@ export class FavoritesController {
   async remove(@Query('userId') userId: string, @Query('termId') termId: number) {
     return this.favoritesService.removeFavorite(userId, +termId);
   }
+
+  @Get('check')
+  async isFavorite(@Query('userId') userId: string, @Query('termId') termId: string,) {
+    return { isFavorite: await this.favoritesService.isFavorite(userId, +termId) };
+  }
+
+
 }
