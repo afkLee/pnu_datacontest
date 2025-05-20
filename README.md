@@ -65,6 +65,36 @@
 ```bash
 docker-compose up --build
 ```
+> 최초 실행 시 **PostgreSQL과 Elasticsearch가 완전히 기동되기까지** 수 초 ~ 수십 초가 소요될 수 있습니다.
+
+
+### 🧠 Elasticsearch 색인 동기화
+
+NestJS API가 기동된 이후에도 Elasticsearch 색인이 자동으로 동기화되지 않은 경우, 아래와 같이 **수동 요청**을 통해 색인을 생성할 수 있습니다:
+
+```bash
+curl -X POST http://localhost:3000/terms/sync
+```
+> 색인이 누락된 경우 index_not_found_exception 오류가 발생할 수 있습니다
+
+### 🛠 상태 확인 및 디버깅
+
+PostgreSQL 접속 확인
+```bash
+docker exec -it postgres psql -U postgres
+```
+Elasticsearch 상태 확인
+```bash
+curl http://localhost:9200
+```
+NESTJS API 로그확인
+```bash
+docker logs nest-api
+```
+모든 컨테이너 중지 및 볼륨까지 초기화
+```bash
+docker-compose down -v
+```
 ---
 ## 👨‍👩‍👧‍👦 팀 구성
 
