@@ -49,9 +49,10 @@
 ---
 ## 🎨 디자인 시안 (Figma)
 
-[![Figma](https://img.shields.io/badge/Figma-Design-blue?logo=figma)](https://www.figma.com/file/your-design-id)
+[![Figma](https://img.shields.io/badge/Figma-Design-blue?logo=figma)]([https://www.figma.com/file/your-design-id](https://www.figma.com/design/MR8PTDyiM76EosyiQEA3Kt/%EC%82%B0%EC%97%85-%EC%9A%A9%EC%96%B4-%ED%86%B5%ED%95%A9-%EC%84%9C%EB%B9%84%EC%8A%A4?node-id=5-2825))
 
-> 📌 [Figma 디자인 보러가기]([https://www.figma.com/file/your-design-id](https://www.figma.com/design/MR8PTDyiM76EosyiQEA3Kt/%EC%82%B0%EC%97%85-%EC%9A%A9%EC%96%B4-%ED%86%B5%ED%95%A9-%EC%84%9C%EB%B9%84%EC%8A%A4?node-id=5-2825&t=E1OuYoZnQzFGofJb-1))
+> 📌 [Figma 디자인 보러가기](https://www.figma.com/file/your-design-id)
+
 
 
 ## 👨‍👩‍👧‍👦 팀 구성
