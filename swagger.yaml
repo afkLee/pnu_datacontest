@@ -1,0 +1,219 @@
+openapi: 3.0.0
+info:
+  title: 산업용어 API
+  version: 1.0.0
+  description: 산업용어 검색 및 즐겨찾기 관리 API
+
+servers:
+  - url: http://localhost:3000
+
+paths:
+  /terms/search:
+    get:
+      summary: 용어 검색
+      parameters:
+        - name: query
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+        - name: userId
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 검색된 용어 목록 (isFavorite 포함)
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/TermWithFavorite'
+
+  /terms/ask:
+    post:
+      summary: AI 해설 요청
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                question:
+                  type: string
+                  example: "1단질화란?"
+      responses:
+        '200':
+          description: AI가 생성한 해설
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  answer:
+                    type: string
+                    example: |
+                      1단질화은(는) single stage nitriding입니다.
+
+                      설명: 금속을 단일 단계로 질화 처리하는 공정입니다.
+
+  /terms/sync:
+    post:
+      summary: Elasticsearch 색인 동기화
+      responses:
+        '200':
+          description: 색인 완료 메시지
+          content:
+            text/plain:
+              schema:
+                type: string
+                example: "123 terms indexed in Elasticsearch."
+
+  /favorites:
+    get:
+      summary: 즐겨찾기 목록 조회
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: category
+          in: query
+          schema:
+            type: string
+      responses:
+        '200':
+          description: 즐겨찾기된 용어 목록 반환
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/Term'
+
+    post:
+      summary: 즐겨찾기 등록
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/FavoriteCreateInput'
+      responses:
+        '201':
+          description: 등록된 즐겨찾기 반환
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Favorite'
+
+    delete:
+      summary: 즐겨찾기 해제
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: termId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: 삭제 완료
+
+  /favorites/check:
+    get:
+      summary: 즐겨찾기 여부 확인
+      parameters:
+        - name: userId
+          in: query
+          required: true
+          schema:
+            type: string
+        - name: termId
+          in: query
+          required: true
+          schema:
+            type: integer
+      responses:
+        '200':
+          description: isFavorite: true/false
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  isFavorite:
+                    type: boolean
+                    example: true
+
+components:
+  schemas:
+    Term:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 1
+        category:
+          type: string
+          example: 금속
+        term:
+          type: string
+          example: 1단질화
+        termEn:
+          type: string
+          example: single stage nitriding
+        abbreviation:
+          type: string
+          example: SSN
+        definition:
+          type: string
+          example: 금속 표면을 단일 단계로 질화하는 공정입니다.
+        source:
+          type: string
+          example: 산업통상자원부
+
+    TermWithFavorite:
+      allOf:
+        - $ref: '#/components/schemas/Term'
+        - type: object
+          properties:
+            isFavorite:
+              type: boolean
+              example: true
+
+    Favorite:
+      type: object
+      properties:
+        id:
+          type: integer
+          example: 101
+        userId:
+          type: string
+          example: test-user-uuid
+        term:
+          $ref: '#/components/schemas/Term'
+        createdAt:
+          type: string
+          format: date-time
+
+    FavoriteCreateInput:
+      type: object
+      properties:
+        userId:
+          type: string
+          example: test-user-uuid
+        termId:
+          type: integer
+          example: 1
