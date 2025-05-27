@@ -53,7 +53,55 @@
 
 > 📌 [Figma 디자인 보러가기](https://www.figma.com/design/MR8PTDyiM76EosyiQEA3Kt/%EC%82%B0%EC%97%85-%EC%9A%A9%EC%96%B4-%ED%86%B5%ED%95%A9-%EC%84%9C%EB%B9%84%EC%8A%A4?node-id=5-2825)
 
+---
+## 🐳 Docker로 실행하기
 
+이 프로젝트는 PostgreSQL, Elasticsearch, NestJS API로 구성되어 있으며, `docker-compose`를 통해 전체 환경을 빠르게 구축할 수 있습니다.
+
+### 📦 서비스 구성
+
+| 서비스         | 설명             | 주소                      |
+|----------------|------------------|---------------------------|
+| PostgreSQL     | 데이터베이스     | `localhost:5432`          |
+| Elasticsearch  | 검색엔진         | `http://localhost:9200`   |
+| NestJS API     | 백엔드 서버      | `http://localhost:3000`   |
+
+### ▶️ 실행 명령어
+
+```bash
+docker-compose up --build
+```
+> 최초 실행 시 **PostgreSQL과 Elasticsearch가 완전히 기동되기까지** 수 초 ~ 수십 초가 소요될 수 있습니다.
+
+---
+### 🧠 Elasticsearch 색인 동기화
+
+NestJS API가 기동된 이후에도 Elasticsearch 색인이 자동으로 동기화되지 않은 경우, 아래와 같이 **수동 요청**을 통해 색인을 생성할 수 있습니다:
+
+```bash
+curl -X POST http://localhost:3000/terms/sync
+```
+> 색인이 누락된 경우 index_not_found_exception 오류가 발생할 수 있습니다
+
+### 🛠 상태 확인 및 디버깅
+
+PostgreSQL 접속 확인
+```bash
+docker exec -it postgres psql -U postgres
+```
+Elasticsearch 상태 확인
+```bash
+curl http://localhost:9200
+```
+NESTJS API 로그확인
+```bash
+docker logs nest-api
+```
+모든 컨테이너 중지 및 볼륨까지 초기화
+```bash
+docker-compose down -v
+```
+---
 
 
 ## 👨‍👩‍👧‍👦 팀 구성
