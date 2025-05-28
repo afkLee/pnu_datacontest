@@ -120,4 +120,7 @@ docker-compose down -v
 - 업무/연구 생산성 증대
 
 ---
+## 발표자료
+-13주차:https://docs.google.com/presentation/d/1bBgrbi98_t1QHh_5vnHLaVkWeHumhPY193_ctoZMzrc/edit?slide=id.g35d71ef8927_0_16#slide=id.g35d71ef8927_0_16
 
+---
