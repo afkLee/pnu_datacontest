@@ -10,8 +10,13 @@
     "postinstall": "nuxt prepare"
   },
   "dependencies": {
+    "@primevue/core": "^4.3.4",
     "nuxt": "^3.17.4",
+    "primevue": "^4.3.4",
     "vue": "^3.5.14",
     "vue-router": "^4.5.1"
+  },
+  "devDependencies": {
+    "vite-svg-loader": "^5.1.0"
   }
 }
