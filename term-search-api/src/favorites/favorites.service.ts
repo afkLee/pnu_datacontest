@@ -44,7 +44,11 @@ export class FavoritesService {
   async removeFavorite(userId: string, termId: number): Promise<void> {
     console.log('🔥 removeFavorite 호출:', userId, termId);
 
-    const favorite = await this.favoriteRepo.findOneBy({ userId, termId });
+    const favorite = await this.favoriteRepo
+      .createQueryBuilder('favorite')
+      .where('favorite.userId = :userId', { userId })
+      .andWhere('favorite.termId = :termId', { termId })
+      .getOne();
 
     console.log('🎯 찾은 favorite:', favorite);
 
@@ -56,6 +60,7 @@ export class FavoritesService {
     await this.favoriteRepo.remove(favorite);
     console.log('✅ 삭제 완료');
   }
+
 
   async isFavorite(userId: string, termId: number): Promise<boolean> {
     const favorite = await this.favoriteRepo.findOneBy({ userId, termId });
