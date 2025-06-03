@@ -1,4 +1,4 @@
-import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn } from 'typeorm';
+import { Entity, PrimaryGeneratedColumn, Column, ManyToOne, CreateDateColumn, JoinColumn, RelationId } from 'typeorm';
 import { Term } from '../../terms/entities/term.entity';
 import { ApiProperty } from '@nestjs/swagger';
 
@@ -17,9 +17,9 @@ export class Favorite {
   @ApiProperty({ type: () => Term, description: '즐겨찾기한 용어' })
   term: Term;
 
-  @Column()
+  @RelationId((favorite: Favorite) => favorite.term)
   @ApiProperty({ example: 1, description: '즐겨찾기한 용어 ID' })
-  termId: number;  // 🔥 TypeORM에게 termId 필드로 명시
+  termId: number;
 
   @CreateDateColumn()
   @ApiProperty({ example: '2024-06-02T15:30:00.000Z', description: '즐겨찾기 추가 시각' })
