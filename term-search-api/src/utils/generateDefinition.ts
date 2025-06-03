@@ -7,6 +7,7 @@ export async function generateDefinition(term: string, termEn: string): Promise<
 조건: 비유나 잡설 없이, 2~3문장 이내의 정의 형식으로만 작성해줘.`;
 
   try {
+    console.log('[ENV KEY]', process.env.OPENROUTER_API_KEY?.slice(0, 10), '...');
     const res = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
