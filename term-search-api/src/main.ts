@@ -6,6 +6,13 @@ import { SwaggerModule, DocumentBuilder } from '@nestjs/swagger';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
+  //  CORS 허용 설정
+  app.enableCors({
+    origin: '*',  // 모든 Origin 허용 (필요시 특정 Origin만 허용 가능)
+    methods: ['GET', 'POST', 'PATCH', 'DELETE'],
+    credentials: true,
+  });
+
   const config = new DocumentBuilder()
     .setTitle('PNU Data Contest API')
     .setDescription('산업용어 및 즐겨찾기 API 문서')
