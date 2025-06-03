@@ -1,0 +1,456 @@
+.pageWrap {
+    width: 100%;
+    min-height: 100vh;
+    background: #f6f8fc;
+    font-family: 'Noto Sans KR', sans-serif;
+    padding-bottom: 60px;
+}
+
+.headerBar {
+    width: 100%;
+    height: 56px;
+    background: #fff;
+    border-bottom: 1px solid #ddd;
+    display: flex;
+    align-items: center;
+    padding: 0 0 0 28px;
+}
+
+.title {
+    font-size: 19px;
+    color: #283653;
+    font-weight: bold;
+    letter-spacing: 0.03em;
+    margin-right: 50px;
+}
+
+.searchInput {
+    width: 170px;
+    min-width: 80px;
+    max-width: 250px;
+    height: 34px;
+    font-size: 15px;
+    padding: 0 9px;
+    border-radius: 8px;
+    background: #fff;
+    border: 1.1px solid #ddd;
+    outline: none;
+    margin-right: 10px;
+    box-sizing: border-box;
+}
+
+.searchBtn {
+    height: 34px;
+    min-width: 50px;
+    padding: 0 12px;
+    border-radius: 8px;
+    background: #4e73df;
+    color: #fff;
+    border: none;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.15s;
+    margin-left: 0;
+}
+
+.searchBtn:hover {
+    background: #35509a;
+}
+
+.resultHeader {
+    margin: 20px auto 16px auto;
+    width: 95%;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 15px;
+    font-weight: 500;
+    color: #283653;
+}
+
+.resultCount {
+    color: #4e73df;
+    font-size: 13px;
+    margin-left: 12px;
+}
+
+.cardList {
+    width: 95%;
+    margin: 0 auto;
+}
+
+.searchCardWrapper {
+    position: relative;
+    /* ⭐ */
+    background: #fff;
+    border: 1px solid #e6eaf5;
+    border-radius: 12px;
+    box-shadow: 0 1px 8px 0 rgba(78, 115, 223, 0.04);
+    margin-bottom: 18px;
+    padding: 18px 14px 14px 14px;
+    min-height: 82px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+}
+
+.searchCardTitle {
+    font-size: 16px;
+    color: #4e73df;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.divider {
+    border-bottom: 1px solid #ececec;
+    margin-bottom: 10px;
+}
+
+.searchCardBody {
+    display: flex;
+    flex-direction: row;
+    align-items: flex-start;
+    justify-content: space-between;
+}
+
+.searchResultBox {
+    flex: 1;
+}
+
+.termHeader {
+    display: flex;
+    flex-direction: row;
+    align-items: baseline;
+    gap: 8px;
+    margin-bottom: 6px;
+}
+
+.termName {
+    font-size: 15px;
+    font-weight: 700;
+    color: #283653;
+}
+
+.termReading {
+    font-size: 11px;
+    color: #999;
+}
+
+.termDescription {
+    font-size: 12px;
+    color: #444;
+    margin-top: 3px;
+}
+
+.termList {
+    padding-left: 13px;
+    margin: 0;
+}
+
+.starIconWrapper {
+    position: absolute;
+    right: 17px;
+    width: 50px;
+    height: 50px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1;
+}
+
+.searchCardIcon {
+    width: 50px;
+    height: 50px;
+    display: block;
+    cursor: pointer;
+}
+
+.footer {
+    width: 100%;
+    height: 36px;
+    background: #fff;
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    color: #bbb;
+    font-size: 12px;
+    border-top: 1px solid #ececec;
+    z-index: 10;
+}
+
+.footerDot {
+    color: #bbb;
+    font-size: 13px;
+}
+
+.emptyBox {
+    width: 94vw;
+    margin: 26px auto 0 auto;
+    padding: 14px 7px 13px 7px;
+    background: #fff;
+    border: 1px solid #e6eaf5;
+    border-radius: 10px;
+    text-align: center;
+    font-size: 14px;
+    color: #444;
+}
+
+.emptyText {
+    font-size: 16px;
+    margin-bottom: 7px;
+}
+
+.goHome {
+    margin: 8px 0 12px 0;
+    color: #4e73df;
+    font-size: 12px;
+    text-decoration: underline;
+    cursor: pointer;
+}
+
+.emptyDivider {
+    border-top: 1px solid #ececec;
+    width: 91%;
+    margin: 8px auto 9px auto;
+}
+
+.emptyGuide {
+    color: #aaa;
+    font-size: 11px;
+    text-align: left;
+    max-width: 480px;
+    margin: 0 auto;
+}
+
+.guideList {
+    padding-left: 15px;
+    margin: 0;
+}
+
+@media (max-width: 720px) {
+    .headerBar {
+        height: 40px;
+        padding-left: 3vw;
+    }
+
+    .title {
+        font-size: 13.5px;
+        margin-right: 10px;
+
+    }
+
+    .searchInput {
+        width: 87px;
+        max-width: 170px;
+        min-width: 46px;
+        height: 26px;
+        font-size: 12px;
+        margin-right: 5px;
+        border-radius: 7px;
+    }
+
+    .searchBtn {
+        min-width: 36px;
+        height: 26px;
+        font-size: 10.5px;
+        border-radius: 7px;
+        margin-left: 0;
+        padding: 0 6px;
+    }
+
+    .resultHeader {
+        flex-direction: column;
+        gap: 3px;
+        margin: 9px auto 7px auto;
+        font-size: 12px;
+    }
+
+    .resultCount {
+        font-size: 10px;
+        margin-left: 0;
+    }
+
+    .cardList {
+        width: 99vw;
+    }
+
+    .searchCardWrapper {
+        padding: 6px 1vw 7px 2vw;
+        border-radius: 7px;
+        margin-bottom: 6px;
+    }
+
+    .searchCardTitle {
+        font-size: 11.5px;
+        margin-bottom: 4px;
+    }
+
+    .divider {
+        margin-bottom: 5px;
+    }
+
+    .searchCardBody {
+        flex-direction: column;
+        gap: 4px;
+    }
+
+    .starIconWrapper {
+        width: 50px;
+        height: 50px;
+    }
+
+    .searchCardIcon {
+        width: 50px;
+        height: 50px;
+    }
+
+    .termHeader {
+        gap: 2px;
+    }
+
+    .termName {
+        font-size: 11px;
+    }
+
+    .termReading {
+        font-size: 7.5px;
+    }
+
+    .termDescription {
+        font-size: 8.5px;
+        margin-top: 1px;
+    }
+
+    .emptyBox {
+        font-size: 10.5px;
+        padding: 7px 2px 6px 2px;
+        border-radius: 7px;
+        margin: 11px auto 0 auto;
+    }
+
+    .emptyText {
+        font-size: 11.5px;
+    }
+
+    .goHome {
+        font-size: 9.5px;
+    }
+
+    .emptyGuide {
+        font-size: 8.5px;
+        max-width: 97vw;
+    }
+
+    .footer {
+        height: 22px;
+        font-size: 8.5px;
+        gap: 3px;
+    }
+
+    .footerDot {
+        font-size: 8.5px;
+    }
+
+    .favoritesBtn {
+        padding: 4px 7px 4px 5px;
+        border-radius: 13px;
+        gap: 3px;
+    }
+
+    .favoritesIcon svg {
+        width: 13px;
+        height: 13px;
+    }
+
+    .favoritesText {
+        font-size: 11px;
+        margin-left: 1px;
+    }
+}
+
+@media (max-width: 430px) {
+    .headerBar {
+        height: 31px;
+        padding-left: 2vw;
+    }
+
+    .title {
+        font-size: 10.5px;
+        margin-right: 8px;
+
+    }
+
+    .searchInput {
+        max-width: 97vw;
+        padding: 0 3px;
+        margin-right: 4px;
+
+    }
+
+    .searchBtn {
+        padding: 0 3px;
+    }
+
+    .resultHeader,
+    .emptyBox {
+        font-size: 8.5px;
+    }
+
+    .searchCardTitle {
+        font-size: 8.5px;
+    }
+
+    .footer {
+        height: 17px;
+        font-size: 6.5px;
+        gap: 2px;
+    }
+
+    .footerDot {
+        font-size: 7.5px;
+    }
+
+
+
+}
+
+.favoritesBtn {
+    display: flex;
+    align-items: center;
+    gap: 7px;
+    background: #fff;
+    border: 1.5px solid #4e73df;
+    border-radius: 21px;
+    padding: 6px 17px 6px 10px;
+    cursor: pointer;
+    outline: none;
+    box-shadow: none;
+    transition: box-shadow 0.16s, background 0.16s;
+    margin-left: 70vw;
+    position: fixed;
+}
+
+.favoritesBtn:hover {
+    background: #f6f9ff;
+    box-shadow: 0 2px 8px 0 rgba(78, 115, 223, 0.09);
+}
+
+.favoritesIcon {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.favoritesText {
+    font-size: 1rem;
+    color: #4e73df;
+    font-weight: 500;
+    font-family: 'Noto Sans KR', sans-serif;
+    letter-spacing: 0.01em;
+    margin-left: 2px;
+}
