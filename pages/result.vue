@@ -45,26 +45,30 @@
         <!-- 카드 리스트 -->
         <div :class="styles.cardList">
             <div v-for="card in cards" :key="card.id" :class="styles.searchCardWrapper">
-                <div :class="styles.searchCardTitle">{{ card.title }}</div>
+                <div :class="styles.searchCardTitle">{{ card.category }} 검색</div>
                 <div :class="styles.divider"></div>
                 <div :class="styles.searchCardBody">
                     <div :class="styles.searchResultBox">
                         <div :class="styles.termHeader">
-                            <div :class="styles.termName">{{ card.name }}</div>
-                            <div :class="styles.termReading">{{ card.reading }}</div>
+                            <div :class="styles.termName">{{ card.term }}</div>
+                            <div :class="styles.termReading">{{ card.abbreviation }}{{ card.termEn ? ` | ${card.termEn}`
+                                : '' }}</div>
                         </div>
                         <div :class="styles.termDescription">
                             <ul :class="styles.termList">
-                                <li>{{ card.desc }}</li>
+                                <li>{{ card.definition }}</li>
+                                <li v-if="card.source" style="color:#aaa;font-size:11px;margin-top:4px;">출처: {{
+                                    card.source }}</li>
                             </ul>
                         </div>
                     </div>
                     <div :class="styles.starIconWrapper" @click="toggleStar(card.id)" style="cursor:pointer;">
-                        <component :is="card.isStar ? ActiveStar : Star" :class="styles.searchCardIcon" />
+                        <component :is="card.isFavorite ? ActiveStar : Star" :class="styles.searchCardIcon" />
                     </div>
                 </div>
             </div>
         </div>
+
         <div :class="styles.footer">
             <span>서비스 이용 약관</span>
             <span :class="styles.footerDot">·</span>
@@ -76,7 +80,7 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import styles from '~/assets/css/result.module.css'
 import Star from '~/assets/icons/star.svg'
@@ -85,45 +89,76 @@ import ActiveStar from '~/assets/icons/active_star.svg'
 const route = useRoute()
 const router = useRouter()
 
-const searchCategory = computed(() => route.query.category as string || 'all')
+// userId: localStorage에서 가져옴
+const userId = ref(localStorage.getItem('userId') || '')
+
+// 검색 관련 상태
+const searchCategory = ref((route.query.category as string) || 'all')
 const searchKeyword = ref((route.query.keyword as string) || '')
 const searchInput = ref(searchKeyword.value)
+
+const loading = ref(false)
+const cards = ref<any[]>([])
 
 const categoryLabels = {
     all: '전체',
     metal: '금속',
     trade: '통상',
-    abbreviation: '산업약어',
+    abbreviation: '산업',
 } as const
-const searchCategoryLabel = computed(
-    () => categoryLabels[searchCategory.value as keyof typeof categoryLabels] || ''
+const searchCategoryLabel = computed(() =>
+    categoryLabels[searchCategory.value as keyof typeof categoryLabels] || searchCategory.value
 )
+
+const categoryMap = {
+  all: '전체',
+  metal: '금속',
+  trade: '통상',
+  abbreviation: '산업'
+}
+
+// 검색 API 호출 함수
+async function doSearch() {
+  loading.value = true
+  try {
+    const params = new URLSearchParams({
+      query: searchInput.value,
+      category: categoryMap[searchCategory.value as keyof typeof categoryMap] || '전체',
+      userId: userId.value
+    })
+    const url = `http://54.180.150.211:3000/terms/search?${params.toString()}`
+    const res = await fetch(url, { method: 'GET' })
+    const data = await res.json()
+    cards.value = Array.isArray(data) ? data : []
+  } catch (e) {
+    cards.value = []
+  } finally {
+    loading.value = false
+    searchKeyword.value = searchInput.value
+  }
+}
+
+// 페이지 진입시 최초 1회, 쿼리 파라미터 변경시마다 재검색
+watch(
+    () => [route.query.category, route.query.keyword],
+    ([cat, keyword]) => {
+        searchCategory.value = (cat as string) || 'all'
+        searchInput.value = (keyword as string) || ''
+        doSearch()
+    },
+    { immediate: true }
+)
+
 function goFavorites() {
     router.push('/favorites')
 }
-
 function goHome() {
     router.push('/')
 }
 
-const allCards = [
-    { id: 1, title: '금속 검색', name: '철물점', reading: '[鐵物店]', desc: '쇠로 만든 여러 가지 물건을 파는 가게', isStar: false },
-    { id: 2, title: '통상 검색', name: '상점', reading: '[商店]', desc: '상품을 파는 가게', isStar: false },
-    { id: 3, title: '산업 약어 검색', name: '공장', reading: '[工場]', desc: '제품을 만드는 곳', isStar: false },
-    { id: 4, title: '금속 검색', name: '용접기', reading: '[溶接器]', desc: '금속을 녹여 붙이는 기계', isStar: false },
-]
-const cards = ref([...allCards])
-const loading = ref(false)
-
-function doSearch() {
-    searchKeyword.value = searchInput.value
-    cards.value = allCards.filter(card =>
-        card.name.includes(searchInput.value) ||
-        card.desc.includes(searchInput.value)
-    )
-}
+// 즐겨찾기 토글 (isFavorite 값만 로컬에서 변경, 실제 API 반영 필요시 추가)
 function toggleStar(cardId: number) {
-    const card = cards.value.find(c => c.id === cardId)
-    if (card) card.isStar = !card.isStar
+    const card = cards.value.find((c) => c.id === cardId)
+    if (card) card.isFavorite = !card.isFavorite
 }
 </script>
