@@ -51,6 +51,8 @@ services:
         condition: service_healthy
       elasticsearch:
         condition: service_healthy
+    env_file:
+      - ./term-search-api/.env
     environment:
       DB_HOST: postgres
       DB_PORT: 5432
