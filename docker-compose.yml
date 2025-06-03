@@ -22,6 +22,8 @@ services:
 
   elasticsearch:
     image: elasticsearch:7.17.0
+    volumes:
+    - esdata:/usr/share/elasticsearch/data
     container_name: elasticsearch
     environment:
       - discovery.type=single-node
