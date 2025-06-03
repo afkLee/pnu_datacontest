@@ -27,6 +27,7 @@ export class TermsService {
                 query,
                 fields: ['term^3', 'termEn^2', 'abbreviation', 'definition'],
                 fuzziness: 'AUTO',
+                operator: 'and',
               },
             },
           ],
@@ -34,11 +35,11 @@ export class TermsService {
       },
     };
 
-    if (category) {
-      esQuery.query.bool.filter = {
-        term: { category },
-      };
-    }
+  if (category && category !== '전체') {
+    esQuery.query.bool.filter = {
+      term: { category },
+    };
+  }
 
     const result = await this.es.search({
       index: 'terms',
