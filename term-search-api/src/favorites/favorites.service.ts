@@ -17,10 +17,16 @@ export class FavoritesService {
     const term = await this.termRepo.findOneBy({ id: termId });
     if (!term) throw new NotFoundException('Term not found');
 
-    const exists = await this.favoriteRepo.findOneBy({ userId, termId });
+    const exists = await this.favoriteRepo.findOne({
+      where: { userId, term: { id: termId } },
+    });
     if (exists) return exists;
 
-    const favorite = this.favoriteRepo.create({ userId, term });
+    const favorite = this.favoriteRepo.create({
+      userId,
+      term,
+      termId, // 🔥 termId 명시적으로 넣어주기
+    });
     return this.favoriteRepo.save(favorite);
   }
 
