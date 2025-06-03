@@ -44,22 +44,14 @@ export class FavoritesService {
   async removeFavorite(userId: string, termId: number): Promise<void> {
     console.log('🔥 removeFavorite 호출:', userId, termId);
 
-    const result = await this.favoriteRepo
-      .createQueryBuilder()
-      .delete()
-      .from(Favorite)
-      .where('userId = :userId', { userId })
-      .andWhere('termId = :termId', { termId })
-      .execute();
+    const result = await this.favoriteRepo.query(
+      `DELETE FROM "favorites" WHERE "userId" = $1 AND "termId" = $2`,
+      [userId, termId],
+    );
 
-    console.log('🎯 삭제 결과:', result);
-
-    if (result.affected === 0) {
-      throw new Error('즐겨찾기 항목을 찾을 수 없습니다.');
-    }
-
-    console.log('✅ 삭제 완료');
+    console.log('🎯 SQL 삭제 결과:', result);
   }
+
 
 
 
