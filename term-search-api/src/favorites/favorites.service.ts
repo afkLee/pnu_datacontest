@@ -14,37 +14,37 @@ export class FavoritesService {
     private readonly termRepo: Repository<Term>,
   ) {}
 
+  // 즐겨찾기 추가
   async addFavorite(userId: string, termId: number): Promise<Favorite> {
     const term = await this.termRepo.findOneBy({ id: termId });
     if (!term) throw new NotFoundException('Term not found');
 
-    const exists = await this.favoriteRepo.findOneBy({ userId, term: { id: termId } });
+    const exists = await this.favoriteRepo.findOneBy({ userId, termId });
     if (exists) return exists;
 
-    const favorite = this.favoriteRepo.create({ userId, term });
+    const favorite = this.favoriteRepo.create({ userId, term, termId });  // termId 추가
     return this.favoriteRepo.save(favorite);
   }
 
- async getFavorites(userId: string, category?: string): Promise<Term[]> {
-  const favorites = await this.favoriteRepo.find({
-    where: { userId },
-    relations: ['term'],
-  });
+  // 즐겨찾기 조회
+  async getFavorites(userId: string, category?: string): Promise<Term[]> {
+    const favorites = await this.favoriteRepo.find({
+      where: { userId },
+      relations: ['term'],
+    });
 
-  return favorites
-    .map(f => f.term)
-    .filter(term => !category || term.category === category);
-}
+    return favorites
+      .map(f => f.term)
+      .filter(term => !category || term.category === category);
+  }
 
+  // 즐겨찾기 삭제
   async removeFavorite(userId: string, termId: number): Promise<void> {
     console.log('🔥 removeFavorite 호출:', userId, termId);
 
-    const favorite = await this.favoriteRepo
-      .createQueryBuilder('favorite')
-      .leftJoin('favorite.term', 'term')  // term 테이블 조인 추가
-      .where('favorite.userId = :userId', { userId })
-      .andWhere('term.id = :termId', { termId })
-      .getOne();
+    const favorite = await this.favoriteRepo.findOne({
+      where: { userId, termId },  // 🔥 심플하게 변경
+    });
 
     console.log('🎯 찾은 favorite:', favorite);
 
@@ -57,15 +57,11 @@ export class FavoritesService {
     console.log('✅ 삭제 완료');
   }
 
-
-
+  // 즐겨찾기 여부 확인
   async isFavorite(userId: string, termId: number): Promise<boolean> {
-  const favorite = await this.favoriteRepo.findOne({
-    where: {
-      userId,
-      term: { id: termId },
-    },
-  });
-  return !!favorite;
-}
+    const favorite = await this.favoriteRepo.findOne({
+      where: { userId, termId },  // 🔥 수정
+    });
+    return !!favorite;
+  }
 }
