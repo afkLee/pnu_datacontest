@@ -75,7 +75,10 @@ services:
 
 volumes:
   pgdata:
+  esdata:
 
 networks:
   backend:
     driver: bridge
+
+
