@@ -37,8 +37,17 @@ export class FavoritesService {
 }
 
   async removeFavorite(userId: string, termId: number): Promise<void> {
-    await this.favoriteRepo.delete({ userId, term: { id: termId } });
-  }
+    const favorite = await this.favoriteRepo.findOne({
+      where: { userId, term: { id: termId } },
+    });
+
+    if (!favorite) {
+      throw new Error('즐겨찾기 항목을 찾을 수 없습니다.');
+    }
+
+  await this.favoriteRepo.remove(favorite);
+}
+
 
   async isFavorite(userId: string, termId: number): Promise<boolean> {
   const favorite = await this.favoriteRepo.findOne({
