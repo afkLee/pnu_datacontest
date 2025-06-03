@@ -8,7 +8,7 @@ export async function generateDefinition(term: string, termEn: string): Promise<
 
   try {
     const res = await axios.post(
-      'https://openrouter.ai/api/v1/chat/completions',
+      'deepseek/deepseek-r1-0528-qwen3-8b:free',
       {
         model: 'nousresearch/deephermes-3-mistral-24b-preview:free',
         messages: [
