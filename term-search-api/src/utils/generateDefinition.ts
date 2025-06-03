@@ -20,7 +20,6 @@ export async function generateDefinition(term: string, termEn: string): Promise<
         headers: {
           Authorization: `Bearer ${process.env.OPENROUTER_API_KEY}`,  // 여기에서 .env 키 불러옴
           'Content-Type': 'application/json',
-          'HTTP-Referer': 'http://54.180.150.211:3000',
         },
       },
     );
