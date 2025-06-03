@@ -11,7 +11,7 @@ export async function generateDefinition(term: string, termEn: string): Promise<
     const res = await axios.post(
       'https://openrouter.ai/api/v1/chat/completions',
       {
-        model: 'mistralai/mistral-7b-instruct:free',
+        model: 'deepseek/deepseek-chat-v3-0324:free',
         messages: [
           { role: 'system', content: '너는 금속 용어를 한국어로 쉽게 설명하는 도우미야.' },
           { role: 'user', content: prompt },
