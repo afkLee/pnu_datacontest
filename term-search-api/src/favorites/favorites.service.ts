@@ -37,16 +37,19 @@ export class FavoritesService {
 }
 
   async removeFavorite(userId: string, termId: number): Promise<void> {
-    const favorite = await this.favoriteRepo.findOne({
-      where: { userId, term: { id: termId } },
-    });
+    const favorite = await this.favoriteRepo
+      .createQueryBuilder('favorite')
+      .leftJoinAndSelect('favorite.term', 'term')
+      .where('favorite.userId = :userId', { userId })
+      .andWhere('term.id = :termId', { termId })
+      .getOne();
 
     if (!favorite) {
       throw new Error('즐겨찾기 항목을 찾을 수 없습니다.');
     }
 
-  await this.favoriteRepo.remove(favorite);
-}
+    await this.favoriteRepo.remove(favorite);
+  }
 
 
   async isFavorite(userId: string, termId: number): Promise<boolean> {
