@@ -102,13 +102,13 @@ async function fetchFavorites() {
     // API 데이터 가공해서 cards에 저장
     const mapped = Array.isArray(data)
       ? data.map((card: any) => ({
-          id: card.id,
-          title: card.category === 'abbreviation' ? '산업약어' : card.category,
-          name: card.term,
-          reading: [card.abbreviation, card.termEn].filter(Boolean).join(' | '),
-          desc: card.definition,
-          isStar: true, // 즐겨찾기라서 무조건 true
-        }))
+        id: card.id,
+        title: card.category === 'abbreviation' ? '산업약어' : card.category,
+        name: card.term,
+        reading: [card.abbreviation, card.termEn].filter(Boolean).join(' | '),
+        desc: card.definition,
+        isStar: true, // 즐겨찾기라서 무조건 true
+      }))
       : []
     cards.value = mapped
     cardsOriginal.value = mapped // 원본 저장
@@ -140,17 +140,19 @@ function doSearch() {
 // 즐겨찾기 해제 (DELETE)
 async function toggleStar(cardId: number) {
   try {
-    await fetch('http://54.180.150.211:3000/favorites', {
-      method: 'DELETE',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ userId: userId.value, termId: cardId }),
-    })
+    await fetch(
+      `http://54.180.150.211:3000/favorites?userId=${userId.value}&termId=${cardId}`,
+      {
+        method: 'DELETE',
+      }
+    )
     // 성공시 목록 다시 불러오기
     fetchFavorites()
   } catch (e) {
-    // 실패시 별도 처리
+    // 실패 처리 (원한다면)
   }
 }
+
 
 function goHome() {
   router.push('/')
@@ -161,5 +163,3 @@ onMounted(() => {
 })
 
 </script>
-
-

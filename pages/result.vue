@@ -90,18 +90,18 @@ const route = useRoute()
 const router = useRouter()
 
 function generateRandomId(length = 16) {
-  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
-  let result = '';
-  for (let i = 0; i < length; i++) {
-    result += chars.charAt(Math.floor(Math.random() * chars.length));
-  }
-  return result;
+    const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
+    let result = '';
+    for (let i = 0; i < length; i++) {
+        result += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return result;
 }
 
 let uid = localStorage.getItem('userId') || '';
 if (!uid) {
-  uid = generateRandomId(16);
-  localStorage.setItem('userId', uid);
+    uid = generateRandomId(16);
+    localStorage.setItem('userId', uid);
 }
 const userId = ref(uid);
 const searchCategory = ref((route.query.category as string) || 'all')
@@ -112,43 +112,43 @@ const loading = ref(false)
 const cards = ref<any[]>([])
 
 const categoryLabels = {
-  all: '전체',
-  metal: '금속',
-  trade: '통상',
-  abbreviation: '산업약어',  // UI 표기용
+    all: '전체',
+    metal: '금속',
+    trade: '통상',
+    abbreviation: '산업약어',  // UI 표기용
 } as const
 
 const apiCategoryMap = {
-  all: undefined,           // 실제 요청시 undefined면 파라미터 안보냄
-  metal: '금속',
-  trade: '통상',
-  abbreviation: '산업',     // API 요청용
+    all: undefined,           // 실제 요청시 undefined면 파라미터 안보냄
+    metal: '금속',
+    trade: '통상',
+    abbreviation: '산업',     // API 요청용
 } as const
 
 const searchCategoryLabel = computed(
-  () => categoryLabels[searchCategory.value as keyof typeof categoryLabels] || ''
+    () => categoryLabels[searchCategory.value as keyof typeof categoryLabels] || ''
 )
 
 async function doSearch() {
-  loading.value = true
-  try {
-    const params = new URLSearchParams()
-    params.append('query', searchInput.value)
-    // all이 아닐 때만 카테고리 추가
-    const apiCat = apiCategoryMap[searchCategory.value as keyof typeof apiCategoryMap]
-    if (apiCat) params.append('category', apiCat)
-    params.append('userId', userId.value)
-    const url = `http://54.180.150.211:3000/terms/search?${params.toString()}`
-    console.log(url);
-    const res = await fetch(url, { method: 'GET' })
-    const data = await res.json()
-    cards.value = Array.isArray(data) ? data : []
-  } catch (e) {
-    cards.value = []
-  } finally {
-    loading.value = false
-    searchKeyword.value = searchInput.value
-  }
+    loading.value = true
+    try {
+        const params = new URLSearchParams()
+        params.append('query', searchInput.value)
+        // all이 아닐 때만 카테고리 추가
+        const apiCat = apiCategoryMap[searchCategory.value as keyof typeof apiCategoryMap]
+        if (apiCat) params.append('category', apiCat)
+        params.append('userId', userId.value)
+        const url = `http://54.180.150.211:3000/terms/search?${params.toString()}`
+        console.log(url);
+        const res = await fetch(url, { method: 'GET' })
+        const data = await res.json()
+        cards.value = Array.isArray(data) ? data : []
+    } catch (e) {
+        cards.value = []
+    } finally {
+        loading.value = false
+        searchKeyword.value = searchInput.value
+    }
 }
 
 // 페이지 진입시 최초 1회, 쿼리 파라미터 변경시마다 재검색
@@ -190,17 +190,15 @@ async function toggleStar(termId: number) {
     // 즐겨찾기 삭제
     else {
         try {
-            const res = await fetch('http://54.180.150.211:3000/favorites', {
-                method: 'DELETE',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({
-                    userId: userId.value,
-                    termId
-                })
-            })
+            const res = await fetch(
+                `http://54.180.150.211:3000/favorites?userId=${userId.value}&termId=${termId}`,
+                {
+                    method: 'DELETE',
+                }
+            )
+
             if (res.ok) card.isFavorite = false
         } catch (e) { /* error 핸들 가능 */ }
     }
 }
 </script>
-
