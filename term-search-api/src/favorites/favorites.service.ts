@@ -1,4 +1,3 @@
-// src/favorites/favorites.service.ts
 import { Injectable, NotFoundException } from '@nestjs/common';
 import { InjectRepository } from '@nestjs/typeorm';
 import { Repository } from 'typeorm';
@@ -14,7 +13,6 @@ export class FavoritesService {
     private readonly termRepo: Repository<Term>,
   ) {}
 
-  // 즐겨찾기 추가
   async addFavorite(userId: string, termId: number): Promise<Favorite> {
     const term = await this.termRepo.findOneBy({ id: termId });
     if (!term) throw new NotFoundException('Term not found');
@@ -22,11 +20,10 @@ export class FavoritesService {
     const exists = await this.favoriteRepo.findOneBy({ userId, termId });
     if (exists) return exists;
 
-    const favorite = this.favoriteRepo.create({ userId, term, termId });  // termId 추가
+    const favorite = this.favoriteRepo.create({ userId, term });
     return this.favoriteRepo.save(favorite);
   }
 
-  // 즐겨찾기 조회
   async getFavorites(userId: string, category?: string): Promise<Term[]> {
     const favorites = await this.favoriteRepo.find({
       where: { userId },
@@ -38,13 +35,10 @@ export class FavoritesService {
       .filter(term => !category || term.category === category);
   }
 
-  // 즐겨찾기 삭제
   async removeFavorite(userId: string, termId: number): Promise<void> {
     console.log('🔥 removeFavorite 호출:', userId, termId);
 
-    const favorite = await this.favoriteRepo.findOne({
-      where: { userId, termId },  // 🔥 심플하게 변경
-    });
+    const favorite = await this.favoriteRepo.findOneBy({ userId, termId });
 
     console.log('🎯 찾은 favorite:', favorite);
 
@@ -57,11 +51,8 @@ export class FavoritesService {
     console.log('✅ 삭제 완료');
   }
 
-  // 즐겨찾기 여부 확인
   async isFavorite(userId: string, termId: number): Promise<boolean> {
-    const favorite = await this.favoriteRepo.findOne({
-      where: { userId, termId },  // 🔥 수정
-    });
+    const favorite = await this.favoriteRepo.findOneBy({ userId, termId });
     return !!favorite;
   }
 }
