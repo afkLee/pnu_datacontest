@@ -64,51 +64,102 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
-import { useRoute, useRouter } from 'vue-router'
+import { ref, onMounted } from 'vue'
+import { useRouter } from 'vue-router'
 import styles from '~/assets/css/result.module.css'
 import Star from '~/assets/icons/star.svg'
 import ActiveStar from '~/assets/icons/active_star.svg'
 
-const route = useRoute()
+// userId 준비: 없으면 랜덤 생성
+function generateRandomId(length = 16) {
+  const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
+  let result = ''
+  for (let i = 0; i < length; i++) {
+    result += chars.charAt(Math.floor(Math.random() * chars.length))
+  }
+  return result
+}
+let uid = localStorage.getItem('userId') || ''
+if (!uid) {
+  uid = generateRandomId(16)
+  localStorage.setItem('userId', uid)
+}
+const userId = ref(uid)
+
 const router = useRouter()
+const searchInput = ref('')
+const searchKeyword = ref('')
+const cards = ref<any[]>([])
+const cardsOriginal = ref<any[]>([]) // 전체 즐겨찾기 원본
+const loading = ref(false)
 
-const searchCategory = computed(() => route.query.category as string || 'all')
-const searchKeyword = ref((route.query.keyword as string) || '')
-const searchInput = ref(searchKeyword.value)
+// 즐겨찾기 목록 불러오기
+async function fetchFavorites() {
+  loading.value = true
+  try {
+    const res = await fetch(`http://54.180.150.211:3000/favorites?userId=${userId.value}`)
+    const data = await res.json()
+    // API 데이터 가공해서 cards에 저장
+    const mapped = Array.isArray(data)
+      ? data.map((card: any) => ({
+          id: card.id,
+          title: card.category === 'abbreviation' ? '산업약어' : card.category,
+          name: card.term,
+          reading: [card.abbreviation, card.termEn].filter(Boolean).join(' | '),
+          desc: card.definition,
+          isStar: true, // 즐겨찾기라서 무조건 true
+        }))
+      : []
+    cards.value = mapped
+    cardsOriginal.value = mapped // 원본 저장
+  } catch (e) {
+    cards.value = []
+    cardsOriginal.value = []
+  } finally {
+    loading.value = false
+  }
+}
 
-const categoryLabels = {
-  all: '전체',
-  metal: '금속',
-  trade: '통상',
-  abbreviation: '산업약어',
-} as const
-const searchCategoryLabel = computed(
-  () => categoryLabels[searchCategory.value as keyof typeof categoryLabels] || ''
-)
+// 검색어로 필터링 (API 안씀)
+function doSearch() {
+  searchKeyword.value = searchInput.value
+  if (!searchInput.value) {
+    // 검색어 없으면 전체 보여줌
+    cards.value = cardsOriginal.value
+    return
+  }
+  const keyword = searchInput.value.toLowerCase()
+  cards.value = cardsOriginal.value.filter(card =>
+    (card.name && card.name.toLowerCase().includes(keyword)) ||
+    (card.desc && card.desc.toLowerCase().includes(keyword)) ||
+    (card.reading && card.reading.toLowerCase().includes(keyword)) ||
+    (card.title && card.title.toLowerCase().includes(keyword))
+  )
+}
+
+// 즐겨찾기 해제 (DELETE)
+async function toggleStar(cardId: number) {
+  try {
+    await fetch('http://54.180.150.211:3000/favorites', {
+      method: 'DELETE',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ userId: userId.value, termId: cardId }),
+    })
+    // 성공시 목록 다시 불러오기
+    fetchFavorites()
+  } catch (e) {
+    // 실패시 별도 처리
+  }
+}
 
 function goHome() {
   router.push('/')
 }
 
-const allCards = [
-  { id: 1, title: '금속', name: '철물점', reading: '[鐵物店]', desc: '쇠로 만든 여러 가지 물건을 파는 가게', isStar: false },
-  { id: 2, title: '통상', name: '상점', reading: '[商店]', desc: '상품을 파는 가게', isStar: false },
-  { id: 3, title: '산업 약어', name: '공장', reading: '[工場]', desc: '제품을 만드는 곳', isStar: false },
-  { id: 4, title: '금속', name: '용접기', reading: '[溶接器]', desc: '금속을 녹여 붙이는 기계', isStar: false },
-]
-const cards = ref([...allCards])
-const loading = ref(false)
+onMounted(() => {
+  fetchFavorites()
+})
 
-function doSearch() {
-  searchKeyword.value = searchInput.value
-  cards.value = allCards.filter(card =>
-    card.name.includes(searchInput.value) ||
-    card.desc.includes(searchInput.value)
-  )
-}
-function toggleStar(cardId: number) {
-  const card = cards.value.find(c => c.id === cardId)
-  if (card) card.isStar = !card.isStar
-}
 </script>
+
+
