@@ -41,7 +41,7 @@ export class FavoritesService {
 
     const favorite = await this.favoriteRepo
       .createQueryBuilder('favorite')
-      .leftJoinAndSelect('favorite.term', 'term')
+      .leftJoin('favorite.term', 'term')  // term 테이블 조인 추가
       .where('favorite.userId = :userId', { userId })
       .andWhere('term.id = :termId', { termId })
       .getOne();
@@ -56,6 +56,7 @@ export class FavoritesService {
     await this.favoriteRepo.remove(favorite);
     console.log('✅ 삭제 완료');
   }
+
 
 
   async isFavorite(userId: string, termId: number): Promise<boolean> {
