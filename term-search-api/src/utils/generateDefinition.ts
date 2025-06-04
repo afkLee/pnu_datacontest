@@ -1,3 +1,5 @@
+import axios from 'axios';
+
 export async function generateDefinition(term: string, termEn: string): Promise<string> {
   const prompt = `다음 금속 처리 용어에 대해 기술적으로 간결하게 정의해줘.
 용어: ${term}
