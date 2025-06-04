@@ -21,27 +21,30 @@ export class TermsController {
     return this.termsService.search(query, category, userId);
   }
 
-  @Post('ask')
-  @ApiOperation({ summary: 'AI 설명 요청', description: '용어에 대한 AI 설명 요청' })
-  @ApiBody({
-    schema: {
-      type: 'object',
-      properties: {
-        question: { type: 'string', example: '주강이 뭐야?' },
-      },
+@Post('ask')
+@ApiOperation({ summary: 'AI 설명 요청', description: '용어에 대한 AI 설명 요청' })
+@ApiBody({
+  schema: {
+    type: 'object',
+    properties: {
+      term: { type: 'string', example: '소둔' },
+      termEn: { type: 'string', example: 'Annealing' },
     },
-  })
-  @ApiResponse({
-    status: 200,
-    description: 'AI 답변 반환',
-    schema: {
-      example: { answer: '주강은 주조로 제작된 강철입니다.' },
-    },
-  })
-  async ask(@Body() body: { question: string }) {
-    const answer = await this.termsService.askWithAI(body.question);
-    return { answer };
-  }
+    required: ['term'],
+  },
+})
+@ApiResponse({
+  status: 200,
+  description: 'AI 답변 반환',
+  schema: {
+    example: { answer: '소둔은 금속을 가열 후 서서히 냉각하는 열처리 공정입니다.' },
+  },
+})
+async ask(@Body() body: { term: string; termEn?: string }) {
+  const answer = await this.termsService.askWithAI(body.term, body.termEn);
+  return { answer };
+}
+
 
   @Post('sync')
   @ApiOperation({ summary: 'Elasticsearch 색인 동기화', description: 'DB 데이터를 Elasticsearch에 동기화' })

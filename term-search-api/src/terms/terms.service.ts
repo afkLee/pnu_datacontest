@@ -97,43 +97,34 @@ async syncAllToElasticsearch(): Promise<string> {
 
 
   //  AI 해설 반환
-  async askWithAI(termInput: string): Promise<string> {
-    if (!termInput || typeof termInput !== 'string') {
-      console.error('❌ termInput 값이 유효하지 않습니다:', termInput);
-      return '입력된 용어가 없습니다.';
-    }
+async askWithAI(term: string, termEn?: string): Promise<string> {
+  const keyword = term?.trim();
+  if (!keyword) return '입력된 용어가 없습니다.';
 
-    const keyword = termInput.trim();
-    console.log('입력 용어:', keyword);
+  const results = await this.termRepository
+    .createQueryBuilder('term')
+    .where(
+      'term.term ILIKE :kw OR term.termEn ILIKE :kw OR term.abbreviation ILIKE :kw',
+      { kw: `%${keyword}%` },
+    )
+    .getMany();
 
-    const results = await this.termRepository
-      .createQueryBuilder('term')
-      .where(
-        'term.term ILIKE :kw OR term.termEn ILIKE :kw OR term.abbreviation ILIKE :kw',
-        { kw: `%${keyword}%` },
-      )
-      .getMany();
-
-    if (results.length === 0) {
+  if (results.length === 0) {
+    // termEn이 함께 있으면 AI 응답 생성
+    if (term && termEn) {
+      return await generateDefinition(term, termEn);
+    } else {
       return '해당 용어를 찾을 수 없습니다.';
     }
-
-    const result = results[0];
-
-    if (!result.definition) {
-      // term 또는 termEn이 undefined인 경우 방어 처리
-      const safeTerm = result.term || '';
-      const safeTermEn = result.termEn || '';
-
-      if (!safeTerm || !safeTermEn) {
-        console.warn('⚠️ AI 설명 생성을 위한 term 또는 termEn이 비어있음:', result);
-        return '해당 용어에 대한 설명을 생성할 수 없습니다.';
-      }
-
-      const aiAnswer = await generateDefinition(safeTerm, safeTermEn);
-      return aiAnswer;
-    }
-
-    return `${result.term}은(는) ${result.termEn}입니다.\n\n설명: ${result.definition}`;
   }
+
+  const result = results[0];
+  if (!result.definition) {
+    const aiAnswer = await generateDefinition(result.term || '', result.termEn || '');
+    return aiAnswer;
+  }
+
+  return `${result.term}은(는) ${result.termEn}입니다.\n\n설명: ${result.definition}`;
+}
+
 }
