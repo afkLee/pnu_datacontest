@@ -53,9 +53,8 @@ export class TermsService {
     if (userId) {
       const favorites = await this.favoriteRepo.find({
         where: { userId },
-        relations: ['term'],
       });
-      favoriteTermIds = new Set(favorites.map(f => f.term.id));
+      favoriteTermIds = new Set(favorites.map(f => f.termId));
     }
 
     const enrichedResults = await Promise.all(
@@ -99,6 +98,11 @@ async syncAllToElasticsearch(): Promise<string> {
 
   //  AI 해설 반환
   async askWithAI(termInput: string): Promise<string> {
+    if (!termInput || typeof termInput !== 'string') {
+      console.error('❌ termInput 값이 유효하지 않습니다:', termInput);
+      return '입력된 용어가 없습니다.';
+    }
+
     const keyword = termInput.trim();
     console.log('입력 용어:', keyword);
 
@@ -117,7 +121,16 @@ async syncAllToElasticsearch(): Promise<string> {
     const result = results[0];
 
     if (!result.definition) {
-      const aiAnswer = await generateDefinition(result.term, result.termEn);
+      // term 또는 termEn이 undefined인 경우 방어 처리
+      const safeTerm = result.term || '';
+      const safeTermEn = result.termEn || '';
+
+      if (!safeTerm || !safeTermEn) {
+        console.warn('⚠️ AI 설명 생성을 위한 term 또는 termEn이 비어있음:', result);
+        return '해당 용어에 대한 설명을 생성할 수 없습니다.';
+      }
+
+      const aiAnswer = await generateDefinition(safeTerm, safeTermEn);
       return aiAnswer;
     }
 
