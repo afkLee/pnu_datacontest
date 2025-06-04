@@ -7,6 +7,9 @@ WORKDIR /app
 # 3. 종속성 설치를 위해 package.json 복사
 COPY package*.json ./
 
+# ✅ 3.5. .env 파일 복사 추가
+COPY .env .env
+
 # 4. 의존성 설치
 RUN npm install
 
