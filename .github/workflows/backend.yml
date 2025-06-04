@@ -1,1 +1,27 @@
 
+name: Backend CI/CD
+
+on:
+  push:
+    branches:
+      - backend  # backend 브랜치에 push될 때만 실행됨
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Deploy to EC2
+        uses: appleboy/ssh-action@v0.1.6
+        with:
+          host: 54.180.150.211  # 👉 EC2 퍼블릭 IP
+          username: ubuntu
+          key: ${{ secrets.SSH_PRIVATE_KEY }}
+          script: |
+            cd ~/pnu_datacontest
+            git pull origin backend
+            docker compose down
+            docker compose up -d --build
