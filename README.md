@@ -81,7 +81,7 @@ docker-compose up --build
 NestJS API가 기동된 이후에도 Elasticsearch 색인이 자동으로 동기화되지 않은 경우, 아래와 같이 **수동 요청**을 통해 색인을 생성할 수 있습니다:
 
 ```bash
-curl -X POST http://localhost:3000/terms/sync
+curl -X POST http://54.180.150.211:3000/terms/sync
 ```
 > 색인이 누락된 경우 index_not_found_exception 오류가 발생할 수 있습니다
 
@@ -93,7 +93,7 @@ docker exec -it postgres psql -U postgres
 ```
 Elasticsearch 상태 확인
 ```bash
-curl http://localhost:9200
+curl http://54.180.150.211:9200
 ```
 NESTJS API 로그확인
 ```bash
