@@ -1,14 +1,11 @@
 # 1. Node.js 18 기반 이미지 사용
-FROM node:20
+FROM node:18
 
 # 2. 작업 디렉토리 생성
 WORKDIR /app
 
 # 3. 종속성 설치를 위해 package.json 복사
 COPY package*.json ./
-
-# ✅ 3.5. .env 파일 복사 추가
-COPY .env .env
 
 # 4. 의존성 설치
 RUN npm install

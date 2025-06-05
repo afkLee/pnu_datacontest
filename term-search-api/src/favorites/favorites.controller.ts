@@ -20,7 +20,7 @@ export class FavoritesController {
       },
     },
   })
-  @ApiResponse({ status: 201, type: Favorite, description: '추가된 즐겨찾기 정보 반환' })
+  @ApiResponse({ status: 201, type: Favorite, description: '추가된 즐겨찾기' })
   async add(@Body() body: { userId: string; termId: number }) {
     return this.favoritesService.addFavorite(body.userId, body.termId);
   }
@@ -41,17 +41,12 @@ export class FavoritesController {
   @ApiOperation({ summary: '즐겨찾기 제거', description: '사용자 ID와 용어 ID로 즐겨찾기 제거' })
   @ApiQuery({ name: 'userId', description: '사용자 ID', type: String })
   @ApiQuery({ name: 'termId', description: '용어 ID', type: Number })
-  @ApiResponse({
-    status: 200,
-    description: '즐겨찾기 제거 완료',
-    schema: { example: { message: '즐겨찾기 제거 완료' } },
-  })
+  @ApiResponse({ status: 200, description: '즐겨찾기 제거 완료' })
   async remove(
     @Query('userId') userId: string,
     @Query('termId') termId: number,
   ) {
-    await this.favoritesService.removeFavorite(userId, +termId);
-    return { message: '즐겨찾기 제거 완료' }; // ✅ 반환 메시지 추가
+    return this.favoritesService.removeFavorite(userId, +termId);
   }
 
   @Get('check')
@@ -65,10 +60,10 @@ export class FavoritesController {
   })
   async isFavorite(
     @Query('userId') userId: string,
-    @Query('termId') termId: number, // ✅ 타입 통일 (string → number)
+    @Query('termId') termId: string,
   ) {
     return {
-      isFavorite: await this.favoritesService.isFavorite(userId, termId),
+      isFavorite: await this.favoritesService.isFavorite(userId, +termId),
     };
   }
 }
