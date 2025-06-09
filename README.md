@@ -82,8 +82,8 @@ ELASTICSEARCH_URL=http://elasticsearch:9200
  ┃ ┣ 📂 favorites     # 즐겨찾기 기능 API
  ┃ ┣ 📂 utils         # GPT 정의 생성 함수
  ┃ ┗ 📜 main.ts       
- ┃ ┗ 📜 dockerfile
-┣ 📜 docker-compose.yml
+ ┣ 📜 Dockerfile      # NestJS API용 Docker 설정
+┣ 📜 docker-compose.yml  # 전체 서비스 구성용 Docker Compose
 ┣ 📜 README.md
 
 ---
