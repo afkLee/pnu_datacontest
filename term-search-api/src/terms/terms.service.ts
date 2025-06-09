@@ -56,7 +56,7 @@ export class TermsService {
 
     const hits = result.hits.hits.map((hit: any) => hit._source as Term);
 
-    // 즐겨찾기 데이터 가져오기 (로그인한 사용자일 경우)
+    // 즐겨찾기 데이터 가져오기 
     let favoriteTermIds = new Set<number>();
     if (userId) {
       const favorites = await this.favoriteRepo.find({
