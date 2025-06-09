@@ -5,7 +5,10 @@ on:
   push:
     branches:
       - backend  # backend 브랜치에 push될 때만 실행됨
-
+    paths-ignore:
+      - 'README.md'
+      - '**/README.md'     # 하위 폴더의 README도 무시
+      - '**/*.md'          # 모든 Markdown 파일 무시 (선택사항)
 jobs:
   deploy:
     runs-on: ubuntu-latest
