@@ -93,7 +93,9 @@ const cards = ref<any[]>([])
 const cardsOriginal = ref<any[]>([]) // 전체 즐겨찾기 원본
 const loading = ref(false)
 
-// 즐겨찾기 목록 불러오기
+// ------------------------------------------
+// 즐겨찾기 목록 불러오기 (GET)
+// ------------------------------------------
 async function fetchFavorites() {
   loading.value = true
   try {
@@ -113,6 +115,7 @@ async function fetchFavorites() {
     cards.value = mapped
     cardsOriginal.value = mapped // 원본 저장
   } catch (e) {
+    console.log('즐겨찾기 목록 에러:', e)
     cards.value = []
     cardsOriginal.value = []
   } finally {
@@ -120,7 +123,9 @@ async function fetchFavorites() {
   }
 }
 
-// 검색어로 필터링 (API 안씀)
+// ------------------------------------------
+// 검색어로 필터링 (API X, 클라이언트 단에서 필터)
+// ------------------------------------------
 function doSearch() {
   searchKeyword.value = searchInput.value
   if (!searchInput.value) {
@@ -137,23 +142,23 @@ function doSearch() {
   )
 }
 
-// 즐겨찾기 해제 (DELETE)
+// ------------------------------------------
+// 즐겨찾기 해제 (DELETE, 쿼리스트링)
+// ------------------------------------------
 async function toggleStar(cardId: number) {
   try {
     await fetch(
       `http://54.180.150.211:3000/favorites?userId=${userId.value}&termId=${cardId}`,
-      {
-        method: 'DELETE',
-      }
+      { method: 'DELETE' }
     )
     // 성공시 목록 다시 불러오기
     fetchFavorites()
   } catch (e) {
-    // 실패 처리 (원한다면)
+    console.log('즐겨찾기 해제 에러:', e)
   }
 }
 
-
+// ------------------------------------------
 function goHome() {
   router.push('/')
 }
@@ -161,5 +166,4 @@ function goHome() {
 onMounted(() => {
   fetchFavorites()
 })
-
 </script>

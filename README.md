@@ -1,24 +1,16 @@
-# pnu_datacontest
+# 산업 용어 통합 서비스 (Nuxt3/Vue3)
 
-
-# 산업용어 통합검색 웹서비스
-
-> **공공데이터를 기반으로 한 산업 · 통상 · 금속 용어 통합검색 플랫폼**  
-> 제13회 산업통상자원부 공공데이터 활용 아이디어 공모전 출품작
+## 개요
+산업현장의 금속, 통상, 산업약어 등 전문 용어를 검색하고, 즐겨찾기로 저장할 수 있는 통합 서비스입니다.
 
 ---
 
-## 🔍 프로젝트 소개
+## 주요기능
 
-산업 분야에 산재된 전문 용어 데이터를 하나의 플랫폼에서 통합 제공하기 위해 개발된 웹 서비스입니다.  
-금속, 통상, 산업 약어 등 3개 분야의 용어를 통합 검색할 수 있으며, 다음과 같은 기능을 제공합니다:
-
-- 분야별 용어 통합검색
-- 공식 해설 및 출처 정보 제공
-- 분야 필터링 (금속 / 통상 / 산업)
-- 즐겨찾기 기능
-
-> 📚 데이터 출처: 산업통상자원부 및 관련 협회에서 공개한 금속표준용어집, 통상용어집, 산업자원용어 해설집
+- **통합검색**: 다양한 산업 카테고리에서 용어 검색
+- **즐겨찾기**: 용어 즐겨찾기 추가/제거 및 내 즐겨찾기 관리
+- **클라이언트 필터링**: 내 즐겨찾기 내에서 직접 검색(실시간 필터)
+- **반응형 UI**: PC/모바일 환경 모두 지원
 
 ---
 ## 🔗 배포 주소
@@ -27,121 +19,78 @@
 
 ---
 
-## ⚙️ 기술 스택
+## 사용법
 
-| 역할       | 기술                        |
-|------------|-----------------------------|
-| 프론트엔드 | [![Nuxt.js](https://img.shields.io/badge/Nuxt.js-00DC82?style=for-the-badge&logo=nuxt.js&logoColor=white)](https://nuxt.com)                     |
-| 백엔드     | [![NestJS](https://img.shields.io/badge/NestJS-E0234E?style=for-the-badge&logo=nestjs&logoColor=white)](https://nestjs.com) |
-| 데이터베이스 | [![PostgreSQL](https://img.shields.io/badge/PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)](https://www.postgresql.org)                  |
-| 배포       | [![AWS](https://img.shields.io/badge/AWS-232F3E?style=for-the-badge&logo=amazon-aws&logoColor=white)](https://aws.amazon.com)                       |
-
----
-
-## 🧪 주요 API
-
-| Method | Endpoint        | 설명                      |
-|--------|------------------|---------------------------|
-| GET    | `/api/v1/search` | 통합 용어 검색            |
-| POST   | `/api/v1/favorites` | 즐겨찾기 등록         |
-| GET    | `/api/v1/favorites` | 즐겨찾기 목록 조회     |
-| DELETE | `/api/v1/favorites` | 즐겨찾기 삭제         |
-
-[![Open in Swagger Editor](https://img.shields.io/badge/Swagger%20Editor-Open-blue?logo=swagger)](https://editor.swagger.io/?url=https://raw.githubusercontent.com/afkLee/pnu_datacontest/main/swagger.yaml)
-
- **Import URL**: https://raw.githubusercontent.com/afkLee/pnu_datacontest/main/swagger.yaml
+1. **검색**  
+   메인에서 키워드를 입력, 카테고리를 선택 후 검색
+2. **결과 목록**  
+   용어별 카드에서 즐겨찾기(별) 버튼으로 등록/해제
+3. **내 즐겨찾기**  
+   상단 '즐겨찾기' 버튼으로 내 즐겨찾기 페이지 이동, 별도의 검색 가능
+4. **유저식별**  
+   로그인 필요없이, 16자리 임의 userId가 로컬스토리지에 자동 저장
 
 ---
 
-## 🐳 Docker로 실행하기
+## 개발환경
 
-이 프로젝트는 PostgreSQL, Elasticsearch, NestJS API로 구성되어 있으며, `docker-compose`를 통해 전체 환경을 빠르게 구축할 수 있습니다.
-
-### 📦 서비스 구성
-
-| 서비스         | 설명             | 주소                      |
-|----------------|------------------|---------------------------|
-| PostgreSQL     | 데이터베이스     | `localhost:5432`          |
-| Elasticsearch  | 검색엔진         | `http://localhost:9200`   |
-| NestJS API     | 백엔드 서버      | `http://localhost:3000`   |
-
-### ▶️ 실행 명령어
-
-```bash
-docker-compose up --build
-```
-> 최초 실행 시 **PostgreSQL과 Elasticsearch가 완전히 기동되기까지** 수 초 ~ 수십 초가 소요될 수 있습니다.
-
-
-### 🧠 Elasticsearch 색인 동기화
-
-NestJS API가 기동된 이후에도 Elasticsearch 색인이 자동으로 동기화되지 않은 경우, 아래와 같이 **수동 요청**을 통해 색인을 생성할 수 있습니다:
-
-```bash
-# npm
-npm run dev
-
-# pnpm
-pnpm dev
-
-# yarn
-yarn dev
-
-# bun
-bun run dev
-```
-
-## Production
-
-Build the application for production:
-
-```bash
-# npm
-npm run build
-
-# pnpm
-pnpm build
-
-# yarn
-yarn build
-
-# bun
-bun run build
-```
-
-Locally preview production build:
-
-```bash
-curl http://localhost:9200
-```
-NESTJS API 로그확인
-```bash
-docker logs nest-api
-```
-모든 컨테이너 중지 및 볼륨까지 초기화
-```bash
-docker-compose down -v
-```
----
-## 👨‍👩‍👧‍👦 팀 구성
-
-- **문현부**: 백엔드 개발 (NestJS API, DB 설계)
-- **이응재**: 프론트엔드 개발 (Nuxt.js UI 구성, DB 설계)
-
----
-## 🗓️ 주차별 개발일정
-
-![주차별 개발일정](./개발일정.png)
-
-
-
-
-## 📈 기대효과
-
-- 산업용어 정보의 일관성 확보 및 신뢰도 향상
-- 공공데이터의 민간 활용 확산
-- 검색 시간 단축과 정보 접근성 향상
-- 업무/연구 생산성 증대
+- Nuxt3 (Vue3)
+- Typescript
+- REST API (NestJS/Express 백엔드)
 
 ---
 
+## 실행방법
+
+1. 레포지토리 클론  
+   `git clone <레포주소>`
+2. 패키지 설치  
+   `npm install`
+3. 개발 서버 실행  
+   `npm run dev`
+4. 빌드 & SSR 서버 실행  
+   `npm run build && npm run start`
+
+---
+
+## API 명세 (예시)
+
+- **GET /terms/search**: 용어 검색
+- **POST /favorites**: 즐겨찾기 등록  
+  `{ userId, termId }`
+- **DELETE /favorites?userId=...&termId=...**: 즐겨찾기 해제
+- **GET /favorites?userId=...**: 내 즐겨찾기 전체
+
+---
+
+## 참고
+
+- 카테고리 "전체" 선택시 category 파라미터 미전송
+- 즐겨찾기 토글 시 실시간 반영
+
+
+## 사용자 가이드
+
+### 1. 검색하기
+
+- 메인 페이지에서 원하는 **카테고리**(전체, 금속, 통상, 산업약어)를 선택
+- 검색어 입력 후 `검색` 버튼 또는 엔터 입력
+- 결과 카드의 `별(★)`을 클릭하면 즐겨찾기에 추가
+
+### 2. 즐겨찾기 관리
+
+- 상단 `즐겨찾기` 버튼 클릭 → 내 즐겨찾기 페이지로 이동
+- 내 즐겨찾기 내에서만 별도의 **검색어** 입력 가능 (즉시 필터링)
+- 별(★)을 다시 클릭하면 즐겨찾기에서 해제됨
+
+### 3. 유저 관리/로그인
+
+- **회원가입/로그인 불필요**
+- 처음 방문 시 16자리 임의 userId가 브라우저 LocalStorage에 자동 발급되어 개별 식별
+
+### 4. 기타 안내
+
+- **카테고리 '전체'**로 검색할 경우 API 파라미터에서 category는 전송하지 않음
+- **오류 발생 시**: 네트워크 문제나 서버 에러가 발생하면 콘솔에 안내 메시지 출력됨. 새로고침 후에도 문제가 지속되면 관리자에게 문의
+
+---

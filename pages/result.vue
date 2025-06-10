@@ -80,6 +80,9 @@
 </template>
 
 <script setup lang="ts">
+// ------------------------------------------
+// import 및 상수 설정
+// ------------------------------------------
 import { ref, computed, watch } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import styles from '~/assets/css/result.module.css'
@@ -89,6 +92,7 @@ import ActiveStar from '~/assets/icons/active_star.svg'
 const route = useRoute()
 const router = useRouter()
 
+// 랜덤 16자리 userId 생성 (없으면 생성해서 localStorage 저장)
 function generateRandomId(length = 16) {
     const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
     let result = '';
@@ -97,38 +101,44 @@ function generateRandomId(length = 16) {
     }
     return result;
 }
-
 let uid = localStorage.getItem('userId') || '';
 if (!uid) {
     uid = generateRandomId(16);
     localStorage.setItem('userId', uid);
 }
 const userId = ref(uid);
+
+// 검색 관련 상태
 const searchCategory = ref((route.query.category as string) || 'all')
 const searchKeyword = ref((route.query.keyword as string) || '')
 const searchInput = ref(searchKeyword.value)
 
-const loading = ref(false)
-const cards = ref<any[]>([])
+const loading = ref(false)      // 로딩 상태
+const cards = ref<any[]>([])    // 검색 결과 리스트
 
+// 카테고리 라벨 (UI 표기용)
 const categoryLabels = {
     all: '전체',
     metal: '금속',
     trade: '통상',
-    abbreviation: '산업약어',  // UI 표기용
+    abbreviation: '산업약어',  // UI 표기
 } as const
 
+// 카테고리 맵 (API 호출용)
 const apiCategoryMap = {
-    all: undefined,           // 실제 요청시 undefined면 파라미터 안보냄
+    all: undefined,           // 전체일 경우 파라미터 미포함
     metal: '금속',
     trade: '통상',
-    abbreviation: '산업',     // API 요청용
+    abbreviation: '산업',     // API 표기
 } as const
 
 const searchCategoryLabel = computed(
     () => categoryLabels[searchCategory.value as keyof typeof categoryLabels] || ''
 )
 
+// ------------------------------------------
+// 검색 함수: 입력값/카테고리로 검색 (API 호출)
+// ------------------------------------------
 async function doSearch() {
     loading.value = true
     try {
@@ -139,11 +149,12 @@ async function doSearch() {
         if (apiCat) params.append('category', apiCat)
         params.append('userId', userId.value)
         const url = `http://54.180.150.211:3000/terms/search?${params.toString()}`
-        console.log(url);
+        console.log(url);  // 요청 URL 확인
         const res = await fetch(url, { method: 'GET' })
         const data = await res.json()
         cards.value = Array.isArray(data) ? data : []
     } catch (e) {
+        console.log('검색 API 에러:', e)
         cards.value = []
     } finally {
         loading.value = false
@@ -151,7 +162,9 @@ async function doSearch() {
     }
 }
 
-// 페이지 진입시 최초 1회, 쿼리 파라미터 변경시마다 재검색
+// ------------------------------------------
+// 페이지 진입 시 & 쿼리 변경 시 자동 검색
+// ------------------------------------------
 watch(
     () => [route.query.category, route.query.keyword],
     ([cat, keyword]) => {
@@ -162,18 +175,23 @@ watch(
     { immediate: true }
 )
 
+// ------------------------------------------
+// 즐겨찾기 페이지 이동
 function goFavorites() {
     router.push('/favorites')
 }
+// 메인 이동
 function goHome() {
     router.push('/')
 }
 
-// 즐겨찾기 토글 (API 연동)
+// ------------------------------------------
+// 즐겨찾기 토글 (추가/삭제)
+// ------------------------------------------
 async function toggleStar(termId: number) {
     const card = cards.value.find((c) => c.id === termId)
     if (!card) return
-    // 즐겨찾기 추가
+    // 즐겨찾기 추가 (POST)
     if (!card.isFavorite) {
         try {
             const res = await fetch('http://54.180.150.211:3000/favorites', {
@@ -185,20 +203,21 @@ async function toggleStar(termId: number) {
                 })
             })
             if (res.ok) card.isFavorite = true
-        } catch (e) { /* error 핸들 가능 */ }
+        } catch (e) { 
+            console.log('즐겨찾기 추가 에러:', e)
+        }
     }
-    // 즐겨찾기 삭제
+    // 즐겨찾기 삭제 (DELETE - 쿼리스트링)
     else {
         try {
             const res = await fetch(
                 `http://54.180.150.211:3000/favorites?userId=${userId.value}&termId=${termId}`,
-                {
-                    method: 'DELETE',
-                }
+                { method: 'DELETE' }
             )
-
             if (res.ok) card.isFavorite = false
-        } catch (e) { /* error 핸들 가능 */ }
+        } catch (e) {
+            console.log('즐겨찾기 삭제 에러:', e)
+        }
     }
 }
 </script>
