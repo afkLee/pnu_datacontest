@@ -68,9 +68,7 @@ import AbbreviationSvg from '~/assets/icons/abbreviation.svg'
 import ActiveAbbreviationSvg from '~/assets/icons/active_abbreviation.svg'
 import { useRouter } from 'vue-router'
 
-
 const router = useRouter()
-
 
 type CategoryValue = 'all' | 'metal' | 'trade' | 'abbreviation'
 
@@ -79,12 +77,12 @@ interface Category {
     value: CategoryValue
     icon: any
     activeIcon: any
-
 }
 function goFavorites() {
     router.push('/favorites')
 }
 
+// 카테고리 배열 정의 (아이콘 포함)
 const categories: Category[] = [
     { label: '전체', value: 'all', icon: AllSvg, activeIcon: ActiveAllSvg },
     { label: '금속', value: 'metal', icon: MetalSvg, activeIcon: ActiveMetalSvg },
@@ -94,10 +92,12 @@ const categories: Category[] = [
 const selectedCategory = ref<CategoryValue>('all')
 const searchKeyword = ref('')
 
+// 카테고리 선택
 function selectCategory(value: CategoryValue) {
     selectedCategory.value = value
 }
 
+// 검색 버튼/엔터 클릭 시 result로 이동
 function search() {
     router.push({
         path: '/result',
@@ -107,6 +107,4 @@ function search() {
         },
     })
 }
-
-
 </script>
