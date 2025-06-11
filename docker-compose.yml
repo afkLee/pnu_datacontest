@@ -4,12 +4,10 @@ services:
     image: postgres:15
     container_name: postgres
     restart: always
-    env_file:
-      - ./term-search-api/.env
     environment:
-      POSTGRES_USER: ${DB_USERNAME}
-      POSTGRES_PASSWORD: ${DB_PASSWORD}
-      POSTGRES_DB: ${DB_NAME}
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+      POSTGRES_DB: terms
     ports:
       - "5432:5432"
     volumes:
@@ -17,11 +15,10 @@ services:
     networks:
       - backend
     healthcheck:
-      test: ["CMD", "pg_isready", "-U", "${DB_USERNAME}"]
+      test: ["CMD", "pg_isready", "-U", "postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
-
 
   elasticsearch:
     image: elasticsearch:7.17.0
@@ -57,12 +54,12 @@ services:
     env_file:
       - ./term-search-api/.env
     environment:
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_NAME: ${DB_NAME}
-      ELASTICSEARCH_URL: ${ELASTICSEARCH_URL}
+      DB_HOST: postgres
+      DB_PORT: 5432
+      DB_USERNAME: postgres
+      DB_PASSWORD: postgres
+      DB_NAME: terms
+      ELASTICSEARCH_URL: http://elasticsearch:9200
     networks:
       - backend
   pgadmin:
